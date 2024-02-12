@@ -185,7 +185,9 @@ def get_screenshots_of_reddit_posts(reddit_object: dict, screenshot_num: int):
                     location[i] = float("{:.2f}".format(location[i] * zoom))
                 page.screenshot(clip=location, path=postcontentpath)
             else:
-                page.locator('[data-test-id="post-content"]').screenshot(path=postcontentpath)
+                #page.locator('[data-test-id="post-content"]').screenshot(path=postcontentpath)
+                page.locator('[slot="title"]').nth(0).screenshot(path=postcontentpath)
+
         except Exception as e:
             print_substep("Something went wrong!", style="red")
             resp = input(
@@ -254,9 +256,24 @@ def get_screenshots_of_reddit_posts(reddit_object: dict, screenshot_num: int):
                             path=f"assets/temp/{reddit_id}/png/comment_{idx}.png",
                         )
                     else:
-                        page.locator(f"#t1_{comment['comment_id']}").screenshot(
-                            path=f"assets/temp/{reddit_id}/png/comment_{idx}.png"
-                        )
+                        #page.locator(f"#t1_{comment['comment_id']}").screenshot(
+                        #    path=f"assets/temp/{reddit_id}/png/comment_{idx}.png"
+                        #)
+                        #shreddit-comment
+                        #//*[@id="comment-fold-button"]/span/span/svg
+                        
+                        
+                        page.get_by_role("button",)
+
+                        if page.is_visible(selector = 'xpath=//*[@id="main-content"]/shreddit-comment-tree/shreddit-comment[@collapsed]', timeout = 7000):
+                            page.locator('xpath=//*[@id="main-content"]/shreddit-comment-tree/shreddit-comment[@collapsed]').get_by_role("button").click()
+                            print('Click arrow')
+                        else:
+                            print(f'Not found {reddit_id}/png/comment_{idx}')
+
+                        page.locator('xpath=//*[@id="main-content"]/shreddit-comment-tree/shreddit-comment').screenshot(
+                            path=f"assets/temp/{reddit_id}/png/comment_{idx}.png")
+                        #//*[@id="main-content"]/shreddit-comment-tree/shreddit-comment
                 except TimeoutError:
                     del reddit_object["comments"]
                     screenshot_num += 1
