@@ -103,9 +103,10 @@ def get_screenshots_of_reddit_posts(reddit_object: dict, screenshot_num: int):
         page.set_viewport_size(ViewportSize(width=1920, height=1080))
         page.wait_for_load_state()
 
-        page.locator('[name="username"]').fill(settings.config["reddit"]["creds"]["username"])
-        page.locator('[name="password"]').fill(settings.config["reddit"]["creds"]["password"])
-        page.locator("button[class$='m-full-width']").click()
+        page.locator('input[name="username"]').fill(settings.config["reddit"]["creds"]["username"])
+        page.locator('input[name="password"]').fill(settings.config["reddit"]["creds"]["password"])
+        #page.locator("button[class$='AnimatedForm__submitButton']").click()
+        page.click('button:below(input[name="password"])')
         page.wait_for_timeout(5000)
 
         login_error_div = page.locator(".AnimatedForm__errorMessage").first
