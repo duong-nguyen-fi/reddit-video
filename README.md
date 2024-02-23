@@ -1,4 +1,6 @@
 # Reddit Video Maker Bot 🎥
+docker run --rm -it --entrypoint bash --mount type=bind,source="$(pwd)"/RedditVideoMakerBot,target=/app tynikel/reddit-video:1.1
+
 
 All done WITHOUT video editing or asset compiling. Just pure ✨programming magic✨.
 

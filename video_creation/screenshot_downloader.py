@@ -2,7 +2,7 @@ import json
 import re
 from pathlib import Path
 from typing import Dict, Final
-
+from PIL import Image
 import translators
 from playwright.async_api import async_playwright  # pylint: disable=unused-import
 from playwright.sync_api import ViewportSize, sync_playwright
@@ -271,10 +271,32 @@ def get_screenshots_of_reddit_posts(reddit_object: dict, screenshot_num: int):
                             print('Click arrow')
                         else:
                             print(f'Not found {reddit_id}/png/comment_{idx}')
-
-                        page.locator('xpath=//*[@id="main-content"]/shreddit-comment-tree/shreddit-comment').screenshot(
-                            path=f"assets/temp/{reddit_id}/png/comment_{idx}.png")
+                        page.locator('xpath=//*[@id="main-content"]/shreddit-comment-tree/shreddit-comment/div[2]').screenshot(
+                            path=f"assets/temp/{reddit_id}/png/comment_{idx}_username.png")
+                        page.locator('xpath=//*[@id="main-content"]/shreddit-comment-tree/shreddit-comment/div[1]').screenshot(
+                            path=f"assets/temp/{reddit_id}/png/comment_{idx}_avatar.png")
+                        page.locator(f"#t1_{comment['comment_id']}-comment-rtjson-content").screenshot(
+                        #page.locator('xpath=//*[@id="main-content"]/shreddit-comment-tree/shreddit-comment').screenshot(
+                            path=f"assets/temp/{reddit_id}/png/comment_{idx}_content.png")
                         #//*[@id="main-content"]/shreddit-comment-tree/shreddit-comment
+
+                        print("Merge into a comment")
+                        avatar_image = Image.open(f"assets/temp/{reddit_id}/png/comment_{idx}_avatar.png")
+                        username_image = Image.open(f"assets/temp/{reddit_id}/png/comment_{idx}_username.png")
+                        content_image = Image.open(f"assets/temp/{reddit_id}/png/comment_{idx}_content.png")
+                        avatar_image_size = avatar_image.size
+                        username_image_size = username_image.size
+                        content_image_size = content_image.size
+
+                        new_image = Image.new('RGB',(avatar_image_size[0]+username_image_size[0], username_image_size[1]+content_image_size[1]), (11,20,22))
+
+                        new_image.paste(avatar_image,(0,0))
+                        new_image.paste(username_image,(avatar_image_size[0],0))
+                        new_image.paste(content_image,(0,username_image_size[1]))
+
+                        new_image.save(f"assets/temp/{reddit_id}/png/comment_{idx}.png","JPEG")
+
+
                 except TimeoutError:
                     del reddit_object["comments"]
                     screenshot_num += 1
