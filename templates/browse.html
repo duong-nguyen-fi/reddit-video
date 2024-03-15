@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Browse Directory</title>
+</head>
+<body>
+    <h1>Browse Directory: {{ directory }}</h1>
+    <h2>Files:</h2>
+    <ul>
+        {% for file in files %}
+        <li>{{ file }} - <a href="/download?filepath={{ directory }}/{{ file }}">Download</a></li>
+        {% endfor %}
+    </ul>
+    <h2>Subdirectories:</h2>
+    <ul>
+        {% for directory in directories %}
+        <li><a href="/browse?dir={{ directory }}">{{ directory }}</a></li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
