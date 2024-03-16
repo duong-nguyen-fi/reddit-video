@@ -8,7 +8,6 @@ prawcore~=2.3.0
 requests==2.31.0
 rich==13.4.1
 toml==0.10.2
-translators==5.7.6
 pyttsx3==2.90
 Pillow==9.5.0
 tomlkit==0.11.8
@@ -19,5 +18,6 @@ spacy==3.5.3
 torch==2.0.1
 transformers==4.29.2
 ffmpeg-python==0.2.0
-elevenlabs==0.2.17
 yt-dlp==2023.7.6
+elevenlabs==0.2.17
+translators==5.7.6
