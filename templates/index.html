@@ -1,13 +1,20 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>File Browser</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reddit Video Processor</title>
 </head>
 <body>
-    <h1>File Browser</h1>
-    <h2>Root Directory: {{ root }}</h2>
-    <ul>
-        <li><a href="/browse?dir={{ root }}">Browse Files</a></li>
-    </ul>
+    <h1>Reddit Video Processor</h1>
+    <form method="POST" action="/">
+        <label for="subreddit">Subreddit:</label>
+        <input type="text" id="subreddit" name="subreddit"><br><br>
+        <label for="post_id">Post ID:</label>
+        <input type="text" id="post_id" name="post_id"><br><br>
+        <input type="submit" value="Submit">
+    </form>
+    <div id="message"></div>
 </body>
 </html>
+
