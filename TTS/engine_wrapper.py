@@ -16,7 +16,7 @@ from utils.voice import sanitize_text
 
 
 DEFAULT_MAX_LENGTH: int = (
-    50  # Video length variable, edit this on your own risk. It should work, but it's not supported
+    100  # Video length variable, edit this on your own risk. It should work, but it's not supported
 )
 
 

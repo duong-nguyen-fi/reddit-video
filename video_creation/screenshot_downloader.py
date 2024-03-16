@@ -2,7 +2,7 @@ import json
 import re
 from pathlib import Path
 from typing import Dict, Final
-
+from PIL import Image
 import translators
 from playwright.async_api import async_playwright  # pylint: disable=unused-import
 from playwright.sync_api import ViewportSize, sync_playwright
@@ -103,9 +103,10 @@ def get_screenshots_of_reddit_posts(reddit_object: dict, screenshot_num: int):
         page.set_viewport_size(ViewportSize(width=1920, height=1080))
         page.wait_for_load_state()
 
-        page.locator('[name="username"]').fill(settings.config["reddit"]["creds"]["username"])
-        page.locator('[name="password"]').fill(settings.config["reddit"]["creds"]["password"])
-        page.locator("button[class$='m-full-width']").click()
+        page.locator('input[name="username"]').fill(settings.config["reddit"]["creds"]["username"])
+        page.locator('input[name="password"]').fill(settings.config["reddit"]["creds"]["password"])
+        #page.locator("button[class$='AnimatedForm__submitButton']").click()
+        page.click('button:below(input[name="password"])')
         page.wait_for_timeout(5000)
 
         login_error_div = page.locator(".AnimatedForm__errorMessage").first
@@ -185,7 +186,10 @@ def get_screenshots_of_reddit_posts(reddit_object: dict, screenshot_num: int):
                     location[i] = float("{:.2f}".format(location[i] * zoom))
                 page.screenshot(clip=location, path=postcontentpath)
             else:
-                page.locator('[data-test-id="post-content"]').screenshot(path=postcontentpath)
+                #page.locator('[data-test-id="post-content"]').screenshot(path=postcontentpath)
+                #page.locator('[slot="title"]')..screenshot(path=postcontentpath)
+                page.locator(f'xpath=//*[@id="t3_{reddit_id}"]').screenshot(path=postcontentpath)
+
         except Exception as e:
             print_substep("Something went wrong!", style="red")
             resp = input(
@@ -254,9 +258,46 @@ def get_screenshots_of_reddit_posts(reddit_object: dict, screenshot_num: int):
                             path=f"assets/temp/{reddit_id}/png/comment_{idx}.png",
                         )
                     else:
-                        page.locator(f"#t1_{comment['comment_id']}").screenshot(
-                            path=f"assets/temp/{reddit_id}/png/comment_{idx}.png"
-                        )
+                        #page.locator(f"#t1_{comment['comment_id']}").screenshot(
+                        #    path=f"assets/temp/{reddit_id}/png/comment_{idx}.png"
+                        #)
+                        #shreddit-comment
+                        #//*[@id="comment-fold-button"]/span/span/svg
+                        
+                        
+                        page.get_by_role("button",)
+
+                        if page.is_visible(selector = 'xpath=//*[@id="main-content"]/shreddit-comment-tree/shreddit-comment[@collapsed]', timeout = 7000):
+                            page.locator('xpath=//*[@id="main-content"]/shreddit-comment-tree/shreddit-comment[@collapsed]').get_by_role("button").click()
+                            print('Click arrow')
+                        else:
+                            print(f'Not found {reddit_id}/png/comment_{idx}')
+                        page.locator('xpath=//*[@id="main-content"]/shreddit-comment-tree/shreddit-comment/div[2]').screenshot(
+                            path=f"assets/temp/{reddit_id}/png/comment_{idx}_username.png")
+                        page.locator('xpath=//*[@id="main-content"]/shreddit-comment-tree/shreddit-comment/div[1]').screenshot(
+                            path=f"assets/temp/{reddit_id}/png/comment_{idx}_avatar.png")
+                        page.locator(f"#t1_{comment['comment_id']}-comment-rtjson-content").screenshot(
+                        #page.locator('xpath=//*[@id="main-content"]/shreddit-comment-tree/shreddit-comment').screenshot(
+                            path=f"assets/temp/{reddit_id}/png/comment_{idx}_content.png")
+                        #//*[@id="main-content"]/shreddit-comment-tree/shreddit-comment
+
+                        print("Merge into a comment")
+                        avatar_image = Image.open(f"assets/temp/{reddit_id}/png/comment_{idx}_avatar.png")
+                        username_image = Image.open(f"assets/temp/{reddit_id}/png/comment_{idx}_username.png")
+                        content_image = Image.open(f"assets/temp/{reddit_id}/png/comment_{idx}_content.png")
+                        avatar_image_size = avatar_image.size
+                        username_image_size = username_image.size
+                        content_image_size = content_image.size
+
+                        new_image = Image.new('RGB',(avatar_image_size[0]+username_image_size[0], username_image_size[1]+content_image_size[1]), (11,20,22))
+
+                        new_image.paste(avatar_image,(0,0))
+                        new_image.paste(username_image,(avatar_image_size[0],0))
+                        new_image.paste(content_image,(0,username_image_size[1]))
+
+                        new_image.save(f"assets/temp/{reddit_id}/png/comment_{idx}.png","JPEG")
+
+
                 except TimeoutError:
                     del reddit_object["comments"]
                     screenshot_num += 1
